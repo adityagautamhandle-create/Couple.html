@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💙 Couple Multi-Task — I Love You</title>
+  <style>
+    :root{
+      --bg:#0a1227;
+      --card:#102246;
+      --accent:#3b82f6;
+      --accent-light:#60a5fa;
+      --muted:#cbd5e1
+    }
+    html,body{
+      height:100%;margin:0;
+      font-family:'Poppins',system-ui,Segoe UI,Roboto,'Noto Sans',sans-serif;
+      background:linear-gradient(180deg,#0a1227 0%,#122a54 100%);
+      color:#f1f5f9;
+    }
+    .wrap{max-width:880px;margin:30px auto;padding:20px}
+    header{text-align:center;padding:16px 0}
+    h1{margin:0;font-size:28px;color:var(--accent)}
+    p.desc{margin:8px 0 22px;color:var(--muted);font-size:15px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .card{background:rgba(255,255,255,0.05);padding:16px;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.5);transition:.3s}
+    .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.6)}
+    button{display:inline-block;padding:10px 16px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-light));color:#fff;font-weight:600;cursor:pointer;transition:.3s}
+    button:hover{transform:scale(1.05)}
+    .mutebtn{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted);padding:8px 14px}
+    .tasks{margin:12px 0}
+    label{display:flex;align-items:center;gap:8px;color:#dbeafe;user-select:none;margin:6px 0}
+    #output{min-height:120px;padding:14px;margin-top:14px;border-radius:14px;background:linear-gradient(180deg,rgba(59,130,246,0.08),rgba(59,130,246,0.05));border:1px solid rgba(59,130,246,0.2);font-size:15px;line-height:1.5}
+    .heart{font-size:44px;transform:scale(1);transition:transform .25s ease}
+    .hearts-anim{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);pointer-events:none}
+    small.info{color:var(--muted);display:block;margin-top:8px;font-size:12px}
+    footer{margin-top:24px;color:var(--muted);font-size:14px;text-align:center}
+    .title-emoji{font-size:32px;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title-emoji">💑💙✨</div>
+      <h1>Couple Multi-Task</h1>
+      <p class="desc">Pyaar aur masti bhare tasks — end me ek surprise: <strong>I Love You</strong> 💌</p>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <strong>Choose your cute tasks</strong>
+        <div class="tasks">
+          <label><input type="checkbox" class="task" value="time" checked> Show current date & time</label>
+          <label><input type="checkbox" class="task" value="compliment" checked> Send a random compliment</label>
+          <label><input type="checkbox" class="task" value="hug"> Virtual hug (heart animation)</label>
+          <label><input type="checkbox" class="task" value="quiz"> Couple mini-quiz</label>
+          <label><input type="checkbox" class="task" value="surprise"> Surprise sequence (last: I love you 💙)</label>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+          <button id="runBtn">Run selected</button>
+          <button class="mutebtn" id="resetBtn">Reset output</button>
+        </div>
+        <small class="info">Multiple select karke ek ke baad ek tasks chalenge ✨</small>
+      </div>
+
+      <div class="card">
+        <strong>Quick actions</strong>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button onclick="showTime()">Show time</button>
+          <button onclick="showCompliment()">Compliment</button>
+          <button onclick="doHug()">Hug</button>
+          <button onclick="toggleMusic()" id="musicBtn">Play Music 🎶</button>
+        </div>
+        <div id="output"></div>
+      </div>
+
+      <div class="card">
+        <strong>How to share</strong>
+        <p style="margin:8px 0;color:var(--muted)">Save as <code>couple-multi.html</code> aur browser me open karo. Agar online link share karna hai to GitHub Pages ya Netlify pe host karke URL bhej sakte ho 💙</p>
+      </div>
+    </div>
+
+    <footer>Made with 💙 for you — Ending line: <strong>I love you</strong></footer>
+  </div>
+
+  <div class="hearts-anim" id="hearts"></div>
+
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b511b3f21.mp3?filename=romantic-background-112199.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+  const out = document.getElementById('output');
+  const hearts = document.getElementById('hearts');
+  const music=document.getElementById('bgMusic');
+  const musicBtn=document.getElementById('musicBtn');
+  let isPlaying=false;
+
+  function toggleMusic(){
+    if(isPlaying){
+      music.pause();
+      musicBtn.textContent='Play Music 🎶';
+    } else {
+      music.play();
+      musicBtn.textContent='Pause Music ⏸️';
+    }
+    isPlaying=!isPlaying;
+  }
+
+  function log(html){
+    const d=document.createElement('div'); d.innerHTML=html; out.appendChild(d); out.scrollTop=out.scrollHeight;
+  }
+  function showTime(){
+    const now=new Date();
+    log(`<strong>Time:</strong> ${now.toLocaleString()}`);
+  }
+  const compliments=[
+    'Tumhari muskaan meri duniya roshan kar deti hai 💙',
+    'Tum bahut smart aur attractive ho 😍',
+    'Tum meri life ka sabse khoobsurat hissa ho ✨',
+    'Tumhari baatein dil ko choo jaati hain 💌'
+  ];
+  function showCompliment(){
+    const c=compliments[Math.floor(Math.random()*compliments.length)];
+    log(`<strong>Compliment:</strong> ${c}`);
+  }
+  function doHug(){
+    for(let i=0;i<9;i++){
+      const h=document.createElement('div');
+      h.className='heart';
+      h.style.opacity=0;
+      h.innerText='💙';
+      hearts.appendChild(h);
+      const delay=i*120;
+      setTimeout(()=>{
+        h.style.opacity=1;
+        h.style.transform=`translate(${(Math.random()-0.5)*220}px, ${-200 - Math.random()*140}px) scale(${1+Math.random()*0.6})`;
+      },delay);
+      setTimeout(()=>h.remove(),3000+delay);
+    }
+    log('<strong>Virtual hug sent!</strong> 🤗💙');
+  }
+  function coupleQuiz(){
+    const q=[
+      {q:'Humari sabse pehli outing kaha hui thi?', a:'Socho aur yaad karo 💙'},
+      {q:'Mera favourite colour?', a:'Obviously Blue 💙'}
+    ];
+    const pick=q[Math.floor(Math.random()*q.length)];
+    log(`<strong>Quiz:</strong> ${pick.q} — <em>${pick.a}</em>`);
+  }
+  async function surpriseSequence(){
+    const seq=[
+      'Tum mere liye sabse special ho... 💫',
+      'Tumhari hasi se meri duniya chamak uthti hai ✨',
+      'Har din tumhare bina adhoora lagta hai... 💙',
+      '<strong style="font-size:20px;color:var(--accent)">I love you 💙</strong>'
+    ];
+    for(let i=0;i<seq.length;i++){
+      log(seq[i]);
+      await new Promise(r=>setTimeout(r,1300));
+    }
+  }
+  document.getElementById('runBtn').addEventListener('click',async()=>{
+    const boxes=Array.from(document.querySelectorAll('.task:checked')).map(x=>x.value);
+    if(boxes.length===0){log('<em>Select at least one task.</em>');return;}
+    for(const t of boxes){
+      if(t==='time') showTime();
+      else if(t==='compliment') showCompliment();
+      else if(t==='hug') doHug();
+      else if(t==='quiz') coupleQuiz();
+      else if(t==='surprise') await surpriseSequence();
+      await new Promise(r=>setTimeout(r,600));
+    }
+  });
+  document.getElementById('resetBtn').addEventListener('click',()=>{out.innerHTML='';});
+  window.addEventListener('load',()=>{
+    log('Welcome! Select tasks aur enjoy karo 💙 End me hamesha ek baat: <strong>I love you</strong>');
+  });
+</script>
+</body>
+</html>
+
+
